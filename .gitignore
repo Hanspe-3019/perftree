@@ -1,0 +1,10 @@
+*.egg-info/
+__pycache__/
+*.py[cod]
+.DS_Store
+.svnignore
+
+.ipynb_checkpoints
+*.ipynb
+*.db
+old/
