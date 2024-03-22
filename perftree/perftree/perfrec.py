@@ -20,9 +20,15 @@ def time_it(func):
         return rc
 
     return wrapper
-def print_it():
+
+def print_it(header='===', footer=None):
     ' - '
+    print(header)
+    if PerfRec.ROOT is None:
+        return
     perfout.print_it(PerfRec.ROOT)
+    if footer is not None:
+        print(footer)
 
 
 @dataclass
@@ -102,3 +108,12 @@ class PerfRec():
         ' - '
         PerfRec.ROOT = PerfRec(name='**main**')
         PerfRec.CURR = PerfRec.ROOT
+
+class TimeIt():
+    ' context manager '
+    def __init__(self, name):
+        self.name = str(name)
+    def __enter__(self):
+        PerfRec.start(self.name)
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        PerfRec.stop(exception=exc_type is not None)

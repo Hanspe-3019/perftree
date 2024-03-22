@@ -5,7 +5,15 @@ def print_it(root):
     indent = ''
     max_elaps = max(child.elaps for child in root.children.values())
     time_to_str = make_seconds_str(max_elaps)
-
+    header_line = ' '*35 + (
+            'count '
+            '     '
+            'elaps '
+            '       '
+            'cpu   '
+            'busy'
+    )
+    print(header_line)
     def walk(node):
         nonlocal indent
         elaps_inside = node.elaps -  sum(
@@ -14,11 +22,11 @@ def print_it(root):
         cpu_inside = node.cpu - sum(
             child.cpu for child in node.children.values()
         )
-        busy = cpu_inside / elaps_inside
+        busy = min(cpu_inside / elaps_inside, 1)
         print(
             f'{indent + node.name:30s}:'
             f'{int_to_str(node.count)} '
-            f'{int_to_str(node.exceptions)} '
+            f'{"*" if node.exceptions > 0 else ' '} '
             f'{time_to_str(elaps_inside)} '
             f'{time_to_str(cpu_inside)} '
             f' {busy:4.0%} '
