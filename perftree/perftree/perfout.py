@@ -1,7 +1,7 @@
 ' - '
 
 def print_it(root):
-    '-'
+    'Print Tree, ist fummelig'
     indent = ''
     max_elaps = max(child.elaps for child in root.children.values())
     time_to_str = make_seconds_str(max_elaps)
@@ -14,6 +14,7 @@ def print_it(root):
             'busy'
     )
     print(header_line)
+
     def walk(node):
         nonlocal indent
         elaps_inside = node.elaps -  sum(
@@ -22,7 +23,10 @@ def print_it(root):
         cpu_inside = node.cpu - sum(
             child.cpu for child in node.children.values()
         )
-        busy = min(cpu_inside / elaps_inside, 1)
+        busy = min(
+            cpu_inside / elaps_inside if elaps_inside > 0 else 1.,
+            1.
+        )
         print(
             f'{indent + node.name:30s}:'
             f'{int_to_str(node.count)} '
