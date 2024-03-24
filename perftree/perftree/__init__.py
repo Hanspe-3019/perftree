@@ -9,3 +9,5 @@ Usage: see code in test_it.py – Run it with:
 from .perfrec import time_it
 from .perfrec import print_it
 from .perfrec import TimeIt
+from .perfrec import reset
+__all__ = ('time_it', 'print_it', 'TimeIt', 'reset')

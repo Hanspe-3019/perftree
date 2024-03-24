@@ -1,5 +1,4 @@
 ' - '
-
 def print_it(root):
     'Print Tree, ist fummelig'
     indent = ''
