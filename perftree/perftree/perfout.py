@@ -7,19 +7,22 @@ def print_it(root):
     time_to_str = make_seconds_str(max_elaps)
     header_line = ' '*35 + (
             'count '
-            '     '
-            'elaps '
-            '       '
-            'cpu   '
+            '     elaps '
+            '      /call   '
+            '   cpu   '
             'busy'
     )
     print(header_line)
 
+    sum_elaps_inside = 0
+
     def walk(node):
         nonlocal indent
+        nonlocal sum_elaps_inside
         elaps_inside = node.elaps -  sum(
             child.elaps for child in node.children.values()
         )
+        sum_elaps_inside += elaps_inside
         cpu_inside = node.cpu - sum(
             child.cpu for child in node.children.values()
         )
@@ -32,6 +35,7 @@ def print_it(root):
             f'{int_to_str(node.count)} '
             f'{"*" if node.exceptions > 0 else ' '} '
             f'{time_to_str(elaps_inside)} '
+            f'{secs_to_str(elaps_inside/node.count) if node.count > 1 else ' '*10}'
             f'{time_to_str(cpu_inside)} '
             f' {busy:4.0%} '
         )
@@ -43,6 +47,7 @@ def print_it(root):
 
     for child in root.children.values():
         walk(child)
+    print(f'{"*"*30}: {" "*10}{secs_to_str(sum_elaps_inside)}')
 
 def make_seconds_str(max_secs):
     '- '
@@ -63,10 +68,13 @@ def make_seconds_str(max_secs):
 
     return sec_to_str
 
+def secs_to_str(secs):
+    ' - '
+    return make_seconds_str(secs)(secs)
 def int_to_str(i):
     ' format int to str'
     if i < 10**6:
         return f'{i:8d}'
     if i < 10**9:
-        return f'{i/10**6:5.1f}M'
-    return f'{i/10**9:5.1f}G'
+        return f'{i/10**6:7.2f}M'
+    return f'{i/10**9:7.2f}G'

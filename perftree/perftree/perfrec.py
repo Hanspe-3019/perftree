@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from perftree import perfout
 
 def time_it(func):
-    ''' Wrapper '''
+    ''' Decorator to collect start and stop timing of decorated functions '''
     def wrapper(*args, **kwargs):
         PerfRec.start(func.__name__)
         try:
@@ -48,20 +48,6 @@ class PerfRec():
     ROOT = None
     CURR = ROOT
 
-    def __repr__(self):
-        childrens_elaps = sum(
-            child.elaps for child in self.children.values()
-        )
-        own_pct = 1 - (
-            self.elaps - childrens_elaps
-            ) / self.elaps if self.elaps > 0 else 1
-
-        return (
-            f'{self.name:20s}: '
-            f'elaps={self.elaps*1000:.0f} ms ({own_pct:.1%}) '
-            f'count={self.count} '
-            f'num_childs={len(self.children)} '
-        )
     @staticmethod
     def start(name):
         ' - '
@@ -108,6 +94,13 @@ class PerfRec():
         ' - '
         PerfRec.ROOT = PerfRec(name='**main**')
         PerfRec.CURR = PerfRec.ROOT
+
+    @staticmethod
+    def reset():
+        ' reinitialize the tree, returns previous tree'
+        previous = PerfRec.ROOT
+        PerfRec.init()
+        return previous
 
 class TimeIt():
     ' context manager '
