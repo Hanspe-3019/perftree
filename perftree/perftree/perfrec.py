@@ -23,6 +23,8 @@ def time_it(func):
     
     '''
     def wrapper(*args, **kwargs):
+        if PerfRec.ROOT is None:
+            return func(*args, **kwargs)
         PerfRec.start(func.__name__)
         try:
             rc = func(*args, **kwargs)
@@ -39,9 +41,8 @@ def print_it(header='\n', footer=None):
     ''' print performance measurements collected,
     wraps "real" print_it with optional heaader and footer'''
     print(header)
-    if PerfRec.ROOT is None:
-        return
-    perfout.print_it(PerfRec.ROOT)
+    if is_enabled():
+        perfout.print_it(PerfRec.ROOT)
     if footer is not None:
         print(footer)
 
@@ -70,10 +71,8 @@ class PerfRec():
 
     @staticmethod
     def start(name):
-        ' starts measurment, initializes the tree if necessary '
+        ' starts measurment'
         cls = PerfRec # Tipparbeit sparen
-        if cls.ROOT is None:
-            cls.init()
         # Suche `name` in `children
         try:
             perfrec = cls.CURR.children[name]
@@ -116,6 +115,20 @@ class PerfRec():
         PerfRec.ROOT = PerfRec(name='**main**')
         PerfRec.CURR = PerfRec.ROOT
 
+def enable():
+    ''' Enable PerfTree
+    '''
+    if PerfRec.ROOT is None:
+        PerfRec.init()
+def is_enabled():
+    ' - '
+    return PerfRec.ROOT is not None
+def disable():
+    ''' Disable PerfTree
+    '''
+    PerfRec.ROOT = None
+    PerfRec.CURR = PerfRec.ROOT
+
 class TimeIt():
     ''' Context manager to monitor a block of statements
         with TimeIt('a code block'):
@@ -126,6 +139,10 @@ class TimeIt():
     def __init__(self, name):
         self.name = str(name)
     def __enter__(self):
+        if PerfRec.ROOT is None:
+            return
         PerfRec.start(self.name)
     def __exit__(self, exc_type, exc_value, exc_tb):
+        if PerfRec.ROOT is None:
+            return
         PerfRec.stop(exception=exc_type is not None)

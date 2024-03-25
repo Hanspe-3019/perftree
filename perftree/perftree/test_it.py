@@ -7,10 +7,14 @@ from timeit import timeit as timeit_sys
 from perftree import time_it
 from perftree import print_it
 from perftree import TimeIt
+from perftree import enable, is_enabled
 
 def test_it():
     ' kleine Test-Routine '
-    print(__doc__)
+    if is_enabled():
+        print(__doc__)
+    else:
+        print('Test Run with Monitoring disabled')
 
     started_at = time.time()
     pauline()
@@ -21,8 +25,9 @@ def test_it():
         with TimeIt('inline-nested'):
             time.sleep(1.5)
 
+    overhead_txt = f'{"enabled" if is_enabled() else "disabled"}'
     print_it(
-        header=f'Overhead by decorating: ~ {overhead:.2f} µs/call',
+        header=f'Overhead when monitoring is {overhead_txt}: ~ {overhead:.2f} µs/call',
         footer=f'\nTest finished after {time.time()-started_at:.2f} secs.',
     )
 
@@ -64,4 +69,6 @@ def pauline(wait=.1):
         time.sleep(wait)
 
 if __name__ == '__main__':
+    test_it()
+    enable()
     test_it()
