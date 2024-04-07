@@ -32,9 +32,9 @@ def print_it(root):
         print(
             f'{indent + node.name:30s}:'
             f'{int_to_str(node.count)} '
-            f'{"*" if node.exceptions > 0 else ' '} '
+            f'{"*" if node.exceptions > 0 else " "} '
             f'{time_to_str(elaps_inside)} '
-            f'{secs_to_str(elaps_inside/node.count) if node.count > 1 else ' '*10}'
+            f'{secs_to_str(elaps_inside/node.count) if node.count > 1 else " "*10}'
             f'{time_to_str(cpu_inside)} '
             f' {busy:4.0%} '
         )
